@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SoftLinearLayout">
+        <!--可变高度的极限小高度-->
+        <attr name="wkp_minHeight" format="integer"/>
+        <!--可变高度的极限大高度-->
+        <attr name="wkp_maxHeight" format="integer"/>
+    </declare-styleable>
+</resources>
