@@ -18,6 +18,10 @@ Note：可能存在Jcenter还在审核阶段，这时会集成失败！
   <attr name="wkp_minHeight" format="integer"/>
   <!--可变高度的极限大高度-->
   <attr name="wkp_maxHeight" format="integer"/>
+  <!--显示软键盘时的动画时长-->
+  <attr name="wkp_showSoftDuration" format="integer"/>
+  <!--开关底部布局时的动画时长-->
+  <attr name="wkp_toggleDuration" format="integer"/>
 ```
 Note：每个属性都有对应的java设置代码！
 > 布局
@@ -94,6 +98,7 @@ Note：每个属性都有对应的java设置代码！
 Note：SoftLinearLayout一般为根布局，它的子布局最多2个，否则会异常！
 > 代码示例
 ```java
+@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 public class MainActivity extends AppCompatActivity {
 
     private SoftLinearLayout mSll;
@@ -131,7 +136,9 @@ QQ邮箱：1535514884@qq.com<br/>
 Gmail邮箱：wkp15889686524@gmail.com<br/>
 
 ## 版本更新
-* v1.0.1
+* v1.0.2<br/>
+新增动画功能，可设置动画时长，详情参考属性讲解<br/><br/>
+* v1.0.1<br/>
 新创建随软键盘高度变化而变化控件库
 ## License
 
