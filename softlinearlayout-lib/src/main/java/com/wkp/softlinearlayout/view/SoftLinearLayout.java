@@ -3,7 +3,11 @@ package com.wkp.softlinearlayout.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.transition.ChangeBounds;
+import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +21,21 @@ import com.wkp.softlinearlayout.util.SPUtils;
 /**
  * Created by user on 2017/11/10.
  */
-
+@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 public class SoftLinearLayout extends LinearLayout {
     private static final int DEFAULT_CHILD_COUNT = 2;
     private static final int DEFAULT_SECOND_CHILD_HEIGHT = 740;
     private static final int DEFAULT_SECOND_CHILD_MIN_HEIGHT = 400;
     private static final int DEFAULT_SECOND_CHILD_MAX_HEIGHT = 800;
     private static final int DEFAULT_SECOND_CHILD_MID_HEIGHT = 600;
+    private static final long DEFAULT_SHOW_SOFT_DURATION = 50;
+    private static final long DEFAULT_TOGGLE_DURATION = 200;
     private static final String SP_KEY_SECOND_HEIGHT = "second_height";
     private int secondChildHeight = DEFAULT_SECOND_CHILD_HEIGHT;
     private int secondChildMinHeight = DEFAULT_SECOND_CHILD_MIN_HEIGHT;
     private int secondChildMaxHeight = DEFAULT_SECOND_CHILD_MAX_HEIGHT;
+    private long showSoftDuration = DEFAULT_SHOW_SOFT_DURATION;
+    private long toggleDuration = DEFAULT_TOGGLE_DURATION;
     private int firstChildHeight;
     private boolean secondChildState;
     private Context mContext;
@@ -50,18 +58,20 @@ public class SoftLinearLayout extends LinearLayout {
 
     /**
      * 判断控件是否可见
+     *
      * @param visibility
      */
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
         if (visibility == GONE) {
-            SPUtils.put(mContext,SP_KEY_SECOND_HEIGHT,secondChildHeight);
+            SPUtils.put(mContext, SP_KEY_SECOND_HEIGHT, secondChildHeight);
         }
     }
 
     /**
      * 初始化属性
+     *
      * @param attrs
      */
     private void initAttr(AttributeSet attrs) {
@@ -69,8 +79,12 @@ public class SoftLinearLayout extends LinearLayout {
         if (typedArray != null) {
             int minHeight = typedArray.getInteger(R.styleable.SoftLinearLayout_wkp_minHeight, DEFAULT_SECOND_CHILD_MIN_HEIGHT);
             int maxHeight = typedArray.getInteger(R.styleable.SoftLinearLayout_wkp_maxHeight, DEFAULT_SECOND_CHILD_MAX_HEIGHT);
+            int showSoftDuration = typedArray.getInteger(R.styleable.SoftLinearLayout_wkp_showSoftDuration, (int) DEFAULT_SHOW_SOFT_DURATION);
+            int toggleDuration = typedArray.getInteger(R.styleable.SoftLinearLayout_wkp_toggleDuration, (int) DEFAULT_TOGGLE_DURATION);
             setMinHeight(minHeight);
             setMaxHeight(maxHeight);
+            setShowSoftAnimDuration(showSoftDuration);
+            setToggleAnimDuration(toggleDuration);
             typedArray.recycle();
         }
     }
@@ -80,8 +94,13 @@ public class SoftLinearLayout extends LinearLayout {
      */
     private void init() {
         setOrientation(LinearLayout.VERTICAL);
-        firstChildHeight = getTotalHeight() - getTitleBarHeight();
         secondChildHeight = SPUtils.getInt(mContext, SP_KEY_SECOND_HEIGHT, DEFAULT_SECOND_CHILD_HEIGHT);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        firstChildHeight = getTotalHeight() - getTitleBarHeight();          //固定高度
     }
 
     @Override
@@ -90,6 +109,8 @@ public class SoftLinearLayout extends LinearLayout {
             throw new IllegalStateException("SoftLinearLayout can not has three or more children!");
         }
         int visibility = SoftLinearLayout.this.getVisibility();
+        int divTopHeight = 0;
+        int divBotHeight = 0;
         if (visibility == VISIBLE) {
             int topHeight = getVisibleHeight() - getTitleBarHeight();
             int bottomHeight = getTotalHeight() - getVisibleHeight();
@@ -98,14 +119,19 @@ public class SoftLinearLayout extends LinearLayout {
                     mListener.onToggleChanged(false);
                 }
                 secondChildState = false;
-                firstChildHeight = topHeight;
+                divBotHeight = topHeight;
+                divTopHeight = firstChildHeight - topHeight;
                 setSecondChildHeight(bottomHeight);
+                setTransition(showSoftDuration);
             } else {
                 if (secondChildState) {
-                    firstChildHeight = topHeight - secondChildHeight;
+                    divBotHeight = topHeight - secondChildHeight;
+                    divTopHeight = secondChildHeight;
                 } else {
-                    firstChildHeight = topHeight;
+                    divBotHeight = topHeight;
+                    divTopHeight = 0;
                 }
+                setTransition(toggleDuration);
             }
         }
         for (int i = 0; i < getChildCount(); i++) {
@@ -113,14 +139,14 @@ public class SoftLinearLayout extends LinearLayout {
             ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
             switch (i) {
                 case 0:
-                    view.layout(l, t, r, t + firstChildHeight);
+                    view.layout(l, t - divTopHeight, r, t - divTopHeight + firstChildHeight);
                     if (layoutParams.height != firstChildHeight) {
                         layoutParams.height = firstChildHeight;
                         view.setLayoutParams(layoutParams);
                     }
                     break;
                 case 1:
-                    view.layout(l, t + firstChildHeight, r, t + firstChildHeight + secondChildHeight);
+                    view.layout(l, t + divBotHeight, r, t + divBotHeight + secondChildHeight);
                     if (layoutParams.height != secondChildHeight) {
                         layoutParams.height = secondChildHeight;
                         view.setLayoutParams(layoutParams);
@@ -197,6 +223,17 @@ public class SoftLinearLayout extends LinearLayout {
     }
 
     /**
+     * 设置动画时长
+     *
+     * @param duration
+     */
+    private void setTransition(long duration) {
+        ChangeBounds changeBounds = new ChangeBounds();
+        changeBounds.setDuration(duration);
+        TransitionManager.beginDelayedTransition(SoftLinearLayout.this, changeBounds);
+    }
+
+    /**
      * 判断软键盘当前是否显示
      *
      * @return
@@ -211,8 +248,10 @@ public class SoftLinearLayout extends LinearLayout {
      * @param state
      */
     public void toggle(boolean state) {
-        if (secondChildState != state && mListener != null) {
-            mListener.onToggleChanged(state);
+        if (secondChildState != state) {
+            if (mListener != null) {
+                mListener.onToggleChanged(state);
+            }
         }
         secondChildState = state;
         if (state) {
@@ -235,6 +274,7 @@ public class SoftLinearLayout extends LinearLayout {
 
     /**
      * 获取当前状态
+     *
      * @return
      */
     public boolean isToggle() {
@@ -243,31 +283,56 @@ public class SoftLinearLayout extends LinearLayout {
 
     /**
      * 设置可变高度的极限小高度
+     *
      * @param minHeight
      */
-    public void setMinHeight(int minHeight) {
+    public SoftLinearLayout setMinHeight(int minHeight) {
         secondChildMinHeight = minHeight < DEFAULT_SECOND_CHILD_MIN_HEIGHT ? DEFAULT_SECOND_CHILD_MIN_HEIGHT : (minHeight > DEFAULT_SECOND_CHILD_MID_HEIGHT ?
                 DEFAULT_SECOND_CHILD_MID_HEIGHT : minHeight);
+        return this;
     }
 
     /**
      * 设置可变高度的极限大高度
+     *
      * @param maxHeight
      */
-    public void setMaxHeight(int maxHeight) {
+    public SoftLinearLayout setMaxHeight(int maxHeight) {
         secondChildMaxHeight = maxHeight < DEFAULT_SECOND_CHILD_MID_HEIGHT ? DEFAULT_SECOND_CHILD_MID_HEIGHT : (maxHeight > DEFAULT_SECOND_CHILD_MAX_HEIGHT ?
                 DEFAULT_SECOND_CHILD_MAX_HEIGHT : maxHeight);
+        return this;
+    }
+
+    /**
+     * 设置软键盘显示阶段的控件动画时长（需自己调到与键盘动画同步，但大部分输入法键盘动画时长不一致，最小0，最大200）
+     * @param duration
+     * @return
+     */
+    public SoftLinearLayout setShowSoftAnimDuration(long duration) {
+        showSoftDuration = duration < 0 ? 0 : (duration > 200 ? 200 : duration);
+        return this;
+    }
+
+    /**
+     * 设置开关阶段的控件动画时长（最小0，最大500）
+     * @param duration
+     * @return
+     */
+    public SoftLinearLayout setToggleAnimDuration(long duration) {
+        toggleDuration = duration < 0 ? 0 : (duration > 500 ? 500 : duration);
+        return this;
     }
 
     /**
      * 状态改变监听
      */
-    public interface OnToggleChangedListener{
+    public interface OnToggleChangedListener {
         void onToggleChanged(boolean isToggle);
     }
 
     /**
      * 设置状态改变监听
+     *
      * @param listener
      */
     public void setOnToggleChangedListener(OnToggleChangedListener listener) {

@@ -4,7 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BottomLinearLayout.iml" filepath="$PROJECT_DIR$/BottomLinearLayout.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/softlinearlayout-lib/softlinearlayout.iml" filepath="$PROJECT_DIR$/softlinearlayout-lib/softlinearlayout.iml" />
+      <module fileurl="file://E:\AndroidProject\BottomLinearLayout\softlinearlayout-lib\softlinearlayout.iml" filepath="E:\AndroidProject\BottomLinearLayout\softlinearlayout-lib\softlinearlayout.iml" />
+      <module fileurl="file://$PROJECT_DIR$/softlinearlayout-lib/softlinearlayout-lib.iml" filepath="$PROJECT_DIR$/softlinearlayout-lib/softlinearlayout-lib.iml" />
     </modules>
   </component>
 </project>
