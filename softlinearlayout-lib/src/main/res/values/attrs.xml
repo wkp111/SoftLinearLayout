@@ -9,5 +9,7 @@
         <attr name="wkp_showSoftDuration" format="integer"/>
         <!--开关底部布局时的动画时长-->
         <attr name="wkp_toggleDuration" format="integer"/>
+        <!--告诉控件是否有沉浸式状态栏（一般状态栏透明或半透明均为false）-->
+        <attr name="wkp_hasStatusBar" format="boolean"/>
     </declare-styleable>
 </resources>

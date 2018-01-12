@@ -11,8 +11,8 @@ android {
 //        applicationId "com.wkp.softlinearlayout"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 2
-        versionName "1.0.2"
+        versionCode 3
+        versionName "1.0.3"
 
     }
 
@@ -34,7 +34,7 @@ publish {
     userOrg = 'wkp'
     groupId = 'com.wkp'
     artifactId = 'SoftLinearLayout'
-    publishVersion = '1.0.2'
+    publishVersion = '1.0.3'
     desc = 'a library to create a magic LinearLayout'
     website = 'https://github.com/wkp111/SoftLinearLayout'
 }

@@ -40,6 +40,7 @@ public class SoftLinearLayout extends LinearLayout {
     private boolean secondChildState;
     private Context mContext;
     private OnToggleChangedListener mListener;
+    private boolean mHasStatusBar = true;
 
     public SoftLinearLayout(Context context) {
         this(context, null);
@@ -81,10 +82,12 @@ public class SoftLinearLayout extends LinearLayout {
             int maxHeight = typedArray.getInteger(R.styleable.SoftLinearLayout_wkp_maxHeight, DEFAULT_SECOND_CHILD_MAX_HEIGHT);
             int showSoftDuration = typedArray.getInteger(R.styleable.SoftLinearLayout_wkp_showSoftDuration, (int) DEFAULT_SHOW_SOFT_DURATION);
             int toggleDuration = typedArray.getInteger(R.styleable.SoftLinearLayout_wkp_toggleDuration, (int) DEFAULT_TOGGLE_DURATION);
+            boolean hasStatusBar = typedArray.getBoolean(R.styleable.SoftLinearLayout_wkp_hasStatusBar, true);
             setMinHeight(minHeight);
             setMaxHeight(maxHeight);
             setShowSoftAnimDuration(showSoftDuration);
             setToggleAnimDuration(toggleDuration);
+            hasStatusBar(hasStatusBar);
             typedArray.recycle();
         }
     }
@@ -186,10 +189,10 @@ public class SoftLinearLayout extends LinearLayout {
         if (rootView != null) {
             View window = rootView.findViewById(Window.ID_ANDROID_CONTENT);
             if (window != null) {
-                return window.getTop() + getStatusBarHeight();
+                return window.getTop() + (mHasStatusBar ? getStatusBarHeight() : 0);
             }
         }
-        return getStatusBarHeight();
+        return mHasStatusBar ? getStatusBarHeight() : 0;
     }
 
     /**
@@ -279,6 +282,16 @@ public class SoftLinearLayout extends LinearLayout {
      */
     public boolean isToggle() {
         return secondChildState;
+    }
+
+    /**
+     * 是否有沉浸式状态栏（默认true）
+     * @param hasStatusBar
+     * @return
+     */
+    public SoftLinearLayout hasStatusBar(boolean hasStatusBar) {
+        mHasStatusBar = hasStatusBar;
+        return this;
     }
 
     /**
