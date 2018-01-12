@@ -152,7 +152,7 @@ Gmail邮箱：wkp15889686524@gmail.com<br/>
 
 ## 版本更新
 * v1.0.3<br/>
-修复当沉浸式状态栏为透明或半透明时所引起的布局BUG.<br/>
+修复当沉浸式状态栏为透明或半透明时所引起的布局BUG（需设置属性wkp_hasStatusBar或代码设置）.<br/>
 感谢<a href="https://github.com/HappyJess">HappyJess</a>提供的建议.<br/><br/>
 * v1.0.2<br/>
 新增动画功能，可设置动画时长，详情参考属性讲解.<br/><br/>
