@@ -1,13 +1,16 @@
 # SoftLinearLayout [ ![Download](https://api.bintray.com/packages/wkp/maven/SoftLinearLayout/images/download.svg) ](https://bintray.com/wkp/maven/SoftLinearLayout/_latestVersion)
 底部控件随输入法高度变化而变化，比QQ聊天界面更完美
 ## 演示图
-![DragGridView](https://github.com/wkp111/SoftLinearLayout/blob/master/SoftLinearLayout.gif "演示图")
+无状态栏示例图:<br/>
+![SoftLinearLayout1](https://github.com/wkp111/SoftLinearLayout/blob/master/SoftLinearLayout.gif "演示图")<br/>
+有状态栏示例图:<br/>
+![SoftLinearLayout](https://github.com/wkp111/SoftLinearLayout/blob/master/SoftLinearLayout.gif "演示图")
 ## Gradle集成
 ```groovy
 dependencies{
-      compile 'com.wkp:SoftLinearLayout:1.0.1'
+      compile 'com.wkp:SoftLinearLayout:1.0.3'
       //Android Studio3.0+可用以下方式
-      //implementation 'com.wkp:SoftLinearLayout:1.0.1'
+      //implementation 'com.wkp:SoftLinearLayout:1.0.3'
 }
 ```
 Note：可能存在Jcenter还在审核阶段，这时会集成失败！
@@ -22,6 +25,8 @@ Note：可能存在Jcenter还在审核阶段，这时会集成失败！
   <attr name="wkp_showSoftDuration" format="integer"/>
   <!--开关底部布局时的动画时长-->
   <attr name="wkp_toggleDuration" format="integer"/>
+  <!--告诉控件是否有沉浸式状态栏（一般状态栏透明或半透明均为false）-->
+  <attr name="wkp_hasStatusBar" format="boolean"/>
 ```
 Note：每个属性都有对应的java设置代码！
 > 布局
@@ -108,9 +113,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //设置状态栏颜色，有状态栏app:wkp_hasStatusBar="true"
+//        StatusBarUtil.setColor(this,getResources().getColor(R.color.colorPrimary));
+        //设置状态栏半透明，没有状态栏app:wkp_hasStatusBar="false"
+        StatusBarUtil.setTranslucent(this);
+
         ListView lv = findViewById(R.id.lv);
         lv.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,mStrings));
         mSll = findViewById(R.id.sll);
+        //没有状态栏
+        mSll.hasStatusBar(false);
         //设置开关改变监听
         mSll.setOnToggleChangedListener(new SoftLinearLayout.OnToggleChangedListener() {
             @Override
@@ -125,8 +137,11 @@ public class MainActivity extends AppCompatActivity {
         mSll.toggle();
     }
 }
+
 ```
 Note：还有其他API请根据需要自行参考！
+## 感谢
+沉浸式状态栏设置库（Github地址）：<a href="https://github.com/laobie/StatusBarUtil">laobie/StatusBarUtil</a>
 ## 寄语
 控件支持直接代码创建，还有更多API请观看<a href="https://github.com/wkp111/SoftLinearLayout/blob/master/softlinearlayout-lib/src/main/java/com/wkp/softlinearlayout/view/SoftLinearLayout.java">SoftLinearLayout.java</a>内的注释说明。<br/>
 欢迎大家使用，感觉好用请给个Star鼓励一下，谢谢！<br/>
@@ -136,10 +151,13 @@ QQ邮箱：1535514884@qq.com<br/>
 Gmail邮箱：wkp15889686524@gmail.com<br/>
 
 ## 版本更新
+* v1.0.3<br/>
+修复当沉浸式状态栏为透明或半透明时所引起的布局BUG.<br/>
+感谢<a href="https://github.com/HappyJess">HappyJess</a>提供的建议.<br/><br/>
 * v1.0.2<br/>
-新增动画功能，可设置动画时长，详情参考属性讲解<br/><br/>
+新增动画功能，可设置动画时长，详情参考属性讲解.<br/><br/>
 * v1.0.1<br/>
-新创建随软键盘高度变化而变化控件库
+新创建随软键盘高度变化而变化控件库.
 ## License
 
    Copyright 2017 wkp
