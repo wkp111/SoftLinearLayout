@@ -2,7 +2,7 @@
 底部控件随输入法高度变化而变化，比QQ聊天界面更完美
 ## 演示图
 无状态栏示例图:<br/>
-![SoftLinearLayout1](https://github.com/wkp111/SoftLinearLayout/blob/master/SoftLinearLayout.gif "演示图")<br/>
+![SoftLinearLayout1](https://github.com/wkp111/SoftLinearLayout/blob/master/SoftLinearLayout1.gif "演示图")<br/>
 有状态栏示例图:<br/>
 ![SoftLinearLayout](https://github.com/wkp111/SoftLinearLayout/blob/master/SoftLinearLayout.gif "演示图")
 ## Gradle集成
